@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { log } from 'console';
 
 dotenv.config();
 
@@ -8,7 +9,9 @@ dotenv.config();
 mongoose.connect(process.env.MONGO).then(() => {
     console.log('Connected to MongoDB');
     }
-);
+).catch((error) => {
+    console.log(err)
+});
 
 
 // Express
