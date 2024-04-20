@@ -1,44 +1,45 @@
-import { useState } from 'react';
+import React, { useState, useDispatch, useSelector } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  signInStart,
-  signInSuccess,
-  signInFailure,
-} from '../redux/user/userSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice'; // Assuming a Redux slice
 
-export default function SignIn() {
-  const [formData, setFormData] = useState({});
-  const { loading, error } = useSelector((state) => state.user);
+function SignIn() {
+  const [formData, setFormData] = useState({}); // State for form data
+  const { loading, error } = useSelector((state) => state.user); // Access loading and error states from Redux store
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); // Function to dispatch Redux actions
+  const navigate = useNavigate(); // Function for programmatic navigation
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
+    setFormData({ ...formData, [e.target.id]: e.target.value }); // Update form data on change
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      dispatch(signInStart());
+      dispatch(signInStart()); // Dispatch sign-in start action
+
       const res = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData), // Send form data in request body
       });
+
       const data = await res.json();
+
       if (data.success === false) {
-        dispatch(signInFailure(data));
+        dispatch(signInFailure(data)); // Dispatch sign-in failure action with error data
         return;
       }
-      dispatch(signInSuccess(data));
-      navigate('/');
+
+      dispatch(signInSuccess(data)); // Dispatch sign-in success action with user data
+      navigate('/'); // Navigate to home page after successful sign-in
     } catch (error) {
-      dispatch(signInFailure(error));
+      dispatch(signInFailure(error)); // Dispatch sign-in failure action with error
     }
   };
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl text-center font-semibold my-7'>Sign In</h1>
@@ -63,9 +64,10 @@ export default function SignIn() {
         >
           {loading ? 'Loading...' : 'Sign In'}
         </button>
+        <OAuth />
       </form>
       <div className='flex gap-2 mt-5'>
-        <p>Dont Have an account?</p>
+        <p>Don't Have an account?</p>
         <Link to='/sign-up'>
           <span className='text-blue-500'>Sign up</span>
         </Link>
@@ -76,3 +78,5 @@ export default function SignIn() {
     </div>
   );
 }
+
+export default SignIn;
